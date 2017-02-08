@@ -1,6 +1,9 @@
 
 # === Custom Variables ===
 
+CPPLINT_BIN = cpplint
+
+# Temporary build folder
 BUILD_DIR = build
 
 # List of libraries 
@@ -10,7 +13,7 @@ LIB_NAMES = SevenSegmentDisplay
 GTEST_DIR = /usr/src/googletest/googletest
 
 # Flags passed to the C++ compiler.
-CXXFLAGS += -g -Wall -Wextra -pthread
+CXXFLAGS += -g -Wall -Wextra -pthread -I ./
 
 # === Generated Variables ===
 
@@ -22,6 +25,9 @@ CPPFLAGS += -isystem $(GTEST_DIR)/include
 GTEST_HEADERS = $(GTEST_DIR)/include/gtest/*.h \
                 $(GTEST_DIR)/include/gtest/internal/*.h
 GTEST_SRCS_ = $(GTEST_DIR)/src/*.cc $(GTEST_DIR)/src/*.h $(GTEST_HEADERS)
+
+# List of all source files
+LIB_SRC = $(patsubst %,./%/*.cc,$(LIB_NAMES)) $(patsubst %,./%/*.h,$(LIB_NAMES))
 
 # List of file names for library objects (*.o files)
 LIB_OBJECTS = $(patsubst %,$(BUILD_DIR)/%.o,$(LIB_NAMES))
@@ -43,8 +49,8 @@ endef
 
 all : $(LIB_OBJECTS)
 
-clean :
-	rm ./build/*
+clean:
+	rm -f ./build/*
 
 .SECONDEXPANSION: 
 $(LIB_OBJECTS) : LIBNAME = $(call basenamenotdir,$@)
@@ -52,8 +58,11 @@ $(LIB_OBJECTS) : LIBNAME = $(call basenamenotdir,$@)
 $(LIB_OBJECTS) : $$(LIBNAME)/$$(LIBNAME).cc $$(LIBNAME)/$$(LIBNAME).h
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(call basenamenotdir,$@)/$(call basenamenotdir,$@).cc -o $@
 
-run_tests : $(BUILD_DIR)/tests
+tests : cpplint_check $(BUILD_DIR)/tests
 	./$(BUILD_DIR)/tests
+
+cpplint_check : 
+	$(CPPLINT_BIN) $(LIB_SRC)
 
 $(BUILD_DIR)/tests : $(LIB_OBJECTS) $(LIB_TEST_OBJECTS) $(BUILD_DIR)/gtest_main.a
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@
