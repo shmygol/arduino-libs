@@ -1,5 +1,5 @@
 #include "gtest/gtest.h"
-#include "../SevenSegmentDisplay.h"
+#include "../../SevenSegmentDisplay/SevenSegmentDisplay.h"
  
 TEST(SevenSegmentDisplayTest, Sample) { 
     EXPECT_EQ(18.0, 18.0);

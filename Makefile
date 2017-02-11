@@ -70,8 +70,8 @@ $(BUILD_DIR)/tests : $(LIB_OBJECTS) $(LIB_TEST_OBJECTS) $(BUILD_DIR)/gtest_main.
 .SECONDEXPANSION: 
 $(LIB_TEST_OBJECTS) : LIBNAME = $(call get_libname_from_test_object,$@)
 
-$(LIB_TEST_OBJECTS) : $(BUILD_DIR)/$$(LIBNAME).o $$(LIBNAME)/tests/$$(LIBNAME)Test.cc $(GTEST_HEADERS)
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(call get_libname_from_test_object,$@)/tests/$(call get_libname_from_test_object,$@)Test.cc -o $@
+$(LIB_TEST_OBJECTS) : $(BUILD_DIR)/$$(LIBNAME).o tests/$$(LIBNAME)/$$(LIBNAME)Test.cc $(GTEST_HEADERS)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c tests/$(call get_libname_from_test_object,$@)/$(call get_libname_from_test_object,$@)Test.cc -o $@
 
 # For simplicity and to avoid depending on Google Test's
 # implementation details, the dependencies specified below are
